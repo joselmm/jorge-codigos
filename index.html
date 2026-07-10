@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Consulta tu codigo de acceso unico</title>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1301/1301085.png" type="image/png">
+
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: url('https://www.kienyke.com/sites/default/files/styles/amp_1200x675_16_9/public/2022-01/Redes%20striming%20%202.jpg?itok=c6tS0Gjl') no-repeat center center/cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    label {
+      font-size: 0.95rem;
+      color: #333;
+    }
+
+    input {
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 100%;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #007BFF;
+    }
+
+    button {
+      padding: 0.75rem;
+      font-size: 1rem;
+      color: #fff;
+      background-color: #007BFF;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .loader .ball {
+      width: 15px;
+      height: 15px;
+      background-color: #fff;
+      border-radius: 50%;
+      animation: bounce 1.5s infinite;
+    }
+
+    .loader .ball:nth-child(2) {
+      animation-delay: 0.3s;
+    }
+
+    .loader .ball:nth-child(3) {
+      animation-delay: 0.6s;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      80%,
+      100% {
+        transform: translateY(0);
+      }
+
+      40% {
+        transform: translateY(-15px);
+      }
+    }
+
+    #codeContainer {
+      display: none;
+      margin-top: 1rem;
+      padding: 1.5rem;
+      border: 2px solid #007BFF;
+      border-radius: 8px;
+      background-color: rgba(255, 255, 255, 0.95);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    #codeContainer h2 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    #codeContainer .code {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      font-weight: bold;
+      color: #007BFF;
+    }
+
+    #codeContainer button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      color: #fff;
+      background-color: #28a745;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #codeContainer a {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      color: #fff;
+      background-color: #28a745;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #codeContainer button:hover {
+      background-color: #218838;
+    }
+
+    #estimatedTimeAgo {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      opacity: 0.6
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding-right: 2.5rem;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 10px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: #999;
+      user-select: none;
+    }
+
+    .clear-btn:hover {
+      color: #dc3545;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Consulta tu Código</h1>
+  <div class="container">
+    <form id="contactForm" onsubmit="event.preventDefault(); consultarCodigo();">
+      <label for="whatsapp">Escribe tu whatsapp con el que normalmente hablas al vendedor</label>
+      <input type="text" id="whatsapp" required placeholder="Ej: 3138936926"
+        onkeyup="this.value = this.value.replace(/\s/g, '')">
+      <label for="email">Pega aquí el Correo al que se envió el código</label>
+      <!-- Campo de Email con botón X -->
+      <div class="input-wrapper">
+        <input type="email" id="email" required placeholder="eduardomaldona23@gmail.com"
+          onkeyup="this.value = this.value.replace(/\s/g, '')">
+        <span class="clear-btn"
+          onclick="document.getElementById('email').value = ''; document.getElementById('email').focus()">✖</span>
+      </div>
+
+      <button type="submit">Consultar código</button>
+    </form>
+  </div>
+  <div id="codeContainer">
+
+    <h2 id="codeAbout"></h2>
+    <h4 id="estimatedTimeAgo"></h4>
+    <div class="code" hidden id="codeValue"></div>
+    <button id="btn-copiar" hidden onclick="copiarCodigo()">Copiar Codigo</button>
+    <a target="_blank" hidden id="btn-enlace">Abrir enlace</a>
+  </div>
+  <div id="overlay">
+    <div class="loader">
+      <div class="ball"></div>
+      <div class="ball"></div>
+      <div class="ball"></div>
+    </div>
+  </div>
+  <script>
+    let retriedOnce = false;
+    let submitBtn;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      submitBtn = document.querySelector('#contactForm button[type="submit"]');
+      setSubmitEnabled(true);
+    });
+
+    function setSubmitEnabled(enabled) {
+      submitBtn.disabled = !enabled;
+      submitBtn.style.opacity = enabled ? "1" : "0.6";
+      submitBtn.style.cursor = enabled ? "pointer" : "not-allowed";
+    }
+    function retryWithCountdown(seconds) {
+
+
+      return new Promise((resolve) => {
+        let remaining = seconds;
+
+        const toast = Toastify({
+          text: `Intentando de nuevo en ${remaining}...`,
+          duration: seconds * 1000,
+          gravity: "top",
+          position: "right",
+          backgroundColor: "#ffc107",
+          stopOnFocus: true
+        });
+
+        toast.showToast();
+
+        const interval = setInterval(() => {
+          remaining--;
+          if (remaining > 0) {
+            toast.toastElement.innerText = `Intentando de nuevo en ${remaining}...`;
+          } else {
+            clearInterval(interval);
+            toast.hideToast();
+            resolve();
+          }
+        }, 1000);
+      });
+    }
+
+    async function consultarCodigo() {
+      document.getElementById("codeContainer").style.display = "none";
+
+      document.getElementById("overlay").style.display = "flex";
+      const email = document.getElementById("email").value;
+
+
+      const contact = document.getElementById("whatsapp").value;
+      const bandeja1 = "https://script.google.com/macros/s/AKfycbwXEpxqD0hVFygHf3cmyIbZDw4gP4IAesolOIz6v4cKdhd60r2nXYehYjCsjMc-h7m3YQ/exec";
+      const bandeja2 = "https://script.google.com/macros/s/AKfycbwsXlFkEJBHYhUdwEft8ca43lR1ss1D3wWE2wpptn66Oy9XVfVcGP9hZHPjTM0Uw2Ur/exec";
+      var bandejaAConsultar = "";
+      if (email.endsWith("@jcymsteam.com")) {
+        bandejaAConsultar = "" + bandeja1
+      }
+
+      if (email.endsWith("@balstream.online")) {
+        bandejaAConsultar = "" + bandeja2
+      }
+      try {
+        if (bandejaAConsultar === "") throw new Error("Correo con dominio no valido, debe terminar en '@jcymsteam.com' o en '@balstream.online'")
+        const response = await fetch(bandejaAConsultar, {
+          method: "POST",
+          body: JSON.stringify({ emailToCheck: email, contact })
+        });
+        const data = await response.json();
+        document.getElementById("overlay").style.display = "none";
+        if (data.noError) {
+          setSubmitEnabled(true);
+
+          retriedOnce = false;
+
+
+          document.querySelector("#estimatedTimeAgo").innerText = data.estimatedTimeAgo;
+          document.getElementById("codeAbout").innerText = data.about;
+
+          if (data.code) {
+            document.getElementById("btn-enlace").hidden = true;
+
+
+            document.getElementById("codeValue").innerText = data.code;
+            document.getElementById("codeValue").hidden = false;
+            document.getElementById("btn-copiar").hidden = false;
+
+          }
+          if (data.link) {
+
+            document.getElementById("codeValue").hidden = true;
+            document.getElementById("btn-copiar").hidden = true;
+
+            document.getElementById("btn-enlace").hidden = false;
+            document.getElementById("btn-enlace").href = data.link;
+          }
+
+          document.getElementById("codeContainer").style.display = "block";
+          document.getElementById("codeContainer").scrollIntoView(false);
+
+
+          /*  fetch(`https://geo-ip-gydp.onrender.com?ts=${new Date().getTime()}&email=${encodeURIComponent(email)}&contact=${data.contact}&noError=true&message=${encodeURIComponent(data.about)}&from=jose&about=${encodeURIComponent(data.about)}&${data.code ? "code=" + data.code : "link=" + encodeURIComponent(data.link)}`)
+             .then(e => e.text())
+              .then(e=>console.log(e)) 
+             .catch(e => console.log(e)) */
+        } else {
+          if (!retriedOnce) {
+            retriedOnce = true;
+            document.getElementById("overlay").style.display = "none";
+            setSubmitEnabled(false);
+            await retryWithCountdown(5);
+            consultarCodigo();
+          } else {
+            setSubmitEnabled(true);
+
+            retriedOnce = false; // reset para próxima consulta
+            Toastify({ text: data.message || "Ocurrió un error", duration: 6000, gravity: "top", position: "right", backgroundColor: "#dc3545" }).showToast();
+            /*   fetch(`https://geo-ip-gydp.onrender.com?ts=${new Date().getTime()}&email=${encodeURIComponent(email)}&contact=${data.contact}&noError=false&message=${encodeURIComponent(data.message || "Ocurrió un error")}&from=jose&about=${encodeURIComponent(data.message || "Ocurrió un error")}`)
+            .then(e => e.text())
+             .then(e=>console.log(e)) 
+            .catch(e => console.log(e)) */
+
+          }
+        }
+
+      } catch (err) {
+        setSubmitEnabled(true);
+
+        console.log(err);
+        document.getElementById("overlay").style.display = "none";
+
+        if (!retriedOnce) {
+          retriedOnce = true;
+          await retryWithCountdown(5);
+          consultarCodigo();
+        } else {
+          retriedOnce = false;
+          Toastify({
+            text: "Error de conexión: '" + err.message + "'",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#dc3545"
+          }).showToast();
+        }
+      }
+    }
+
+    function copiarCodigo() {
+      const codigo = document.querySelector('#codeContainer .code').innerText;
+      navigator.clipboard.writeText(codigo)
+        .then(() => {
+          Toastify({
+            text: "¡Código copiado!",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#28a745"
+          }).showToast();
+        })
+        .catch(() => {
+          Toastify({
+            text: "Error al copiar el código",
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#dc3545"
+          }).showToast();
+        });
+    }
+
+    // Al cargar el DOM, se agregan los listeners para guardar en localStorage
+    document.addEventListener('DOMContentLoaded', function () {
+      submitBtn = document.querySelector('#contactForm button[type="submit"]');
+      setSubmitEnabled(true);
+
+      const whatsappInput = document.getElementById("whatsapp");
+      const emailInput = document.getElementById("email");
+
+      // Leer parámetros de la URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const contactParam = urlParams.get('contact');
+
+      // Lógica de prioridad para WhatsApp (1. URL, 2. LocalStorage)
+      if (contactParam) {
+        whatsappInput.value = contactParam;
+        localStorage.setItem("whatsapp", contactParam); // Actualiza el local con la prioridad
+      } else if (localStorage.getItem("whatsapp")) {
+        whatsappInput.value = localStorage.getItem("whatsapp");
+      }
+
+      // Carga normal para Email
+      if (localStorage.getItem("email")) {
+        emailInput.value = localStorage.getItem("email");
+      }
+
+      // Listeners para cambios manuales
+      whatsappInput.addEventListener("change", function () {
+        localStorage.setItem("whatsapp", this.value);
+      });
+      emailInput.addEventListener("change", function () {
+        localStorage.setItem("email", this.value);
+      });
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</body>
+
+</html>
