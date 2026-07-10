@@ -23,6 +23,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
+      position: relative;
     }
 
     h1 {
@@ -154,17 +155,7 @@
       color: #007BFF;
     }
 
-    #codeContainer button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      color: #fff;
-      background-color: #28a745;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
+    #codeContainer button,
     #codeContainer a {
       padding: 0.5rem 1rem;
       font-size: 1rem;
@@ -174,9 +165,12 @@
       border-radius: 4px;
       cursor: pointer;
       transition: background-color 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
     }
 
-    #codeContainer button:hover {
+    #codeContainer button:hover,
+    #codeContainer a:hover {
       background-color: #218838;
     }
 
@@ -209,10 +203,204 @@
     .clear-btn:hover {
       color: #dc3545;
     }
+
+    /* Agrega esto dentro de tus etiquetas <style> */
+    [hidden] {
+      display: none !important;
+    }
+
+    /* ESTILOS PANEL DE ADMINISTRACIÓN */
+    .settings-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease;
+      z-index: 1000;
+    }
+
+    .settings-btn:hover {
+      transform: rotate(45deg);
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .settings-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: #fff;
+    }
+
+    .admin-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      padding: 10px;
+    }
+
+    .admin-content {
+      background: #fff;
+      width: 100%;
+      max-width: 650px;
+      border-radius: 8px;
+      padding: 1.5rem;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .close-modal:hover {
+      color: #000;
+    }
+
+    .admin-section {
+      display: none;
+    }
+
+    .admin-section.active {
+      display: block;
+    }
+
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .admin-table th,
+    .admin-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    .admin-table th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    .badge-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .btn-logout {
+      position: absolute;
+      top: 14px;
+      right: 15px;
+      /* Se posiciona al lado izquierdo de la 'X' de cerrar */
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-logout:hover {
+      background-color: #bd2130;
+    }
+
+    .token-badge {
+      background: #e1f5fe;
+      color: #0288d1;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .token-badge .remove-t {
+      cursor: pointer;
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    .action-btn {
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      border-radius: 3px;
+      margin-right: 2px;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+      background-color: #bd2130;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+    }
+
+    .btn-success:hover {
+      background-color: #218838;
+    }
+
+    .inline-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1rem;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #eee;
+    }
+
+    .inline-form input {
+      padding: 6px;
+      font-size: 0.9rem;
+    }
+
+    .inline-form button {
+      padding: 6px 12px;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 
 <body>
+
+  <!-- Botón de Engranaje -->
+  <div class="settings-btn" onclick="openAdminModal()">
+    <svg viewBox="0 0 24 24">
+      <path
+        d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+    </svg>
+  </div>
+
   <h1>Consulta tu Código</h1>
   <div class="container">
     <form id="contactForm" onsubmit="event.preventDefault(); consultarCodigo();">
@@ -220,7 +408,6 @@
       <input type="text" id="whatsapp" required placeholder="Ej: 3138936926"
         onkeyup="this.value = this.value.replace(/\s/g, '')">
       <label for="email">Pega aquí el Correo al que se envió el código</label>
-      <!-- Campo de Email con botón X -->
       <div class="input-wrapper">
         <input type="email" id="email" required placeholder="eduardomaldona23@gmail.com"
           onkeyup="this.value = this.value.replace(/\s/g, '')">
@@ -231,227 +418,606 @@
       <button type="submit">Consultar código</button>
     </form>
   </div>
-  <div id="codeContainer">
 
+  <div id="codeContainer">
     <h2 id="codeAbout"></h2>
     <h4 id="estimatedTimeAgo"></h4>
     <div class="code" hidden id="codeValue"></div>
     <button id="btn-copiar" hidden onclick="copiarCodigo()">Copiar Codigo</button>
     <a target="_blank" hidden id="btn-enlace">Abrir enlace</a>
   </div>
-  <div id="overlay">
-    <div class="loader">
-      <div class="ball"></div>
-      <div class="ball"></div>
-      <div class="ball"></div>
+
+  <!-- MODAL DE ADMINISTRACIÓN -->
+  <div id="adminModal" class="admin-modal">
+    <div class="admin-content">
+      <span class="close-modal" onclick="closeAdminModal()">&times;</span>
+
+      <!-- Paso 1: Email Admin -->
+      <div id="sec-email" class="admin-section active">
+        <h2>Panel de Control - Autenticación</h2>
+        <form style="margin-top:15px;" onsubmit="event.preventDefault(); sendAdminOtp();">
+          <label for="adminEmail">Correo de Administrador</label>
+          <input type="email" id="adminEmail" required placeholder="admin@jcymsteam.com">
+          <button type="submit">Enviar OTP</button>
+        </form>
+      </div>
+
+      <!-- Paso 2: OTP -->
+      <div id="sec-otp" class="admin-section">
+        <h2>Ingresa el código OTP enviado</h2>
+        <form style="margin-top:15px;" onsubmit="event.preventDefault(); verifyAdminOtp();">
+          <label for="adminOtp">Código de Seguridad</label>
+          <input type="text" id="adminOtp" required placeholder="Escribe el OTP recibido">
+          <button type="submit">Verificar e Ingresar</button>
+        </form>
+      </div>
+
+      <!-- Paso 3: Dashboard CRUD -->
+
+      <div id="sec-dashboard" class="admin-section" style="position: relative;">
+        <!-- Botón de Cerrar Sesión -->
+        <button class="btn-logout" onclick="logoutAdmin()">Cerrar Sesión</button>
+
+        <h2>Control de Clientes y Accesos</h2>
+        <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Gestiona las cuentas y números telefónicos
+          autorizados.</p>
+
+        <!-- Campo de búsqueda -->
+        <div style="margin-bottom: 1.2rem;">
+          <input type="text" id="adminSearchInput" placeholder="🔍 Buscar por correo o por celular/token..."
+            oninput="filterAdminTable()"
+            style="padding: 10px; font-size: 0.9rem; width: 100%; border: 1px solid #ccc; border-radius: 4px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);">
+        </div>
+
+        <div class="inline-form">
+          <input type="email" id="newAccEmail" placeholder="Nuevo Correo" required style="flex:2;">
+          <input type="text" id="newAccTokens" placeholder="Tokens (ej: 311222,555444)" required style="flex:2;">
+          <button class="btn-success" onclick="addNewAccount()">Agregar</button>
+        </div>
+
+        <!-- 👇 ESTO ES LO QUE FALTA Y DEBES PEGAR AQUÍ 👇 -->
+        <div style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Correo</th>
+                <th>Celulares / Tokens Autorizados</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="dbTableBody"></tbody>
+          </table>
+        </div>
+        <!-- 👆 HASTA AQUÍ 👆 -->
+
+      </div>
     </div>
-  </div>
-  <script>
-    let retriedOnce = false;
-    let submitBtn;
 
-    document.addEventListener('DOMContentLoaded', () => {
-      submitBtn = document.querySelector('#contactForm button[type="submit"]');
-      setSubmitEnabled(true);
-    });
+    <div id="overlay">
+      <div class="loader">
+        <div class="ball"></div>
+        <div class="ball"></div>
+        <div class="ball"></div>
+      </div>
+    </div>
 
-    function setSubmitEnabled(enabled) {
-      submitBtn.disabled = !enabled;
-      submitBtn.style.opacity = enabled ? "1" : "0.6";
-      submitBtn.style.cursor = enabled ? "pointer" : "not-allowed";
-    }
-    function retryWithCountdown(seconds) {
+    <script>
+      let retriedOnce = false;
+      let submitBtn;
 
-
-      return new Promise((resolve) => {
-        let remaining = seconds;
-
-        const toast = Toastify({
-          text: `Intentando de nuevo en ${remaining}...`,
-          duration: seconds * 1000,
-          gravity: "top",
-          position: "right",
-          backgroundColor: "#ffc107",
-          stopOnFocus: true
-        });
-
-        toast.showToast();
-
-        const interval = setInterval(() => {
-          remaining--;
-          if (remaining > 0) {
-            toast.toastElement.innerText = `Intentando de nuevo en ${remaining}...`;
-          } else {
-            clearInterval(interval);
-            toast.hideToast();
-            resolve();
-          }
-        }, 1000);
-      });
-    }
-
-    async function consultarCodigo() {
-      document.getElementById("codeContainer").style.display = "none";
-
-      document.getElementById("overlay").style.display = "flex";
-      const email = document.getElementById("email").value;
-
-
-      const contact = document.getElementById("whatsapp").value;
+      // Constantes globales de bandejas
       const bandeja1 = "https://script.google.com/macros/s/AKfycbwXEpxqD0hVFygHf3cmyIbZDw4gP4IAesolOIz6v4cKdhd60r2nXYehYjCsjMc-h7m3YQ/exec";
       const bandeja2 = "https://script.google.com/macros/s/AKfycbwsXlFkEJBHYhUdwEft8ca43lR1ss1D3wWE2wpptn66Oy9XVfVcGP9hZHPjTM0Uw2Ur/exec";
-      var bandejaAConsultar = "";
-      if (email.endsWith("@jcymsteam.com")) {
-        bandejaAConsultar = "" + bandeja1
+      const otpUrl = "https://script.google.com/macros/s/AKfycbwf6GCFSnBguzx57q1uUkOS181laO_7lx82gSZIoNonG6EyeG-U4N5fp5yVmLEgU-li/exec"
+
+      // Variables de configuración de Base de Datos
+      let currentSheetId = "";
+      let currentLibraryUrl = "";
+      let dbCachedData = [];
+
+      function getBandejaUrl(emailStr) {
+        if (emailStr.endsWith("@jcymsteam.com")) return bandeja1;
+        if (emailStr.endsWith("@balstream.online")) return bandeja2;
+        return "";
       }
 
-      if (email.endsWith("@balstream.online")) {
-        bandejaAConsultar = "" + bandeja2
+      function showToast(text, isError = false) {
+        Toastify({
+          text: text,
+          duration: isError ? 6000 : 3000,
+          gravity: "top",
+          position: "right",
+          backgroundColor: isError ? "#dc3545" : "#28a745"
+        }).showToast();
       }
-      try {
-        if (bandejaAConsultar === "") throw new Error("Correo con dominio no valido, debe terminar en '@jcymsteam.com' o en '@balstream.online'")
-        const response = await fetch(bandejaAConsultar, {
-          method: "POST",
-          body: JSON.stringify({ emailToCheck: email, contact })
+
+      function retryWithCountdown(seconds) {
+        return new Promise((resolve) => {
+          let remaining = seconds;
+          const toast = Toastify({
+            text: `Intentando de nuevo en ${remaining}...`,
+            duration: seconds * 1000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "#ffc107",
+            stopOnFocus: true
+          });
+          toast.showToast();
+
+          const interval = setInterval(() => {
+            remaining--;
+            if (remaining > 0) {
+              toast.toastElement.innerText = `Intentando de nuevo en ${remaining}...`;
+            } else {
+              clearInterval(interval);
+              toast.hideToast();
+              resolve();
+            }
+          }, 1000);
         });
-        const data = await response.json();
-        document.getElementById("overlay").style.display = "none";
-        if (data.noError) {
-          setSubmitEnabled(true);
+      }
 
-          retriedOnce = false;
+      async function consultarCodigo() {
+        document.getElementById("codeContainer").style.display = "none";
+        document.getElementById("overlay").style.display = "flex";
 
+        const email = document.getElementById("email").value;
+        const contact = document.getElementById("whatsapp").value;
+        const bandejaAConsultar = getBandejaUrl(email);
 
-          document.querySelector("#estimatedTimeAgo").innerText = data.estimatedTimeAgo;
-          document.getElementById("codeAbout").innerText = data.about;
+        try {
+          if (bandejaAConsultar === "") throw new Error("Correo con dominio no valido, debe terminar en '@jcymsteam.com' o en '@balstream.online'");
 
-          if (data.code) {
-            document.getElementById("btn-enlace").hidden = true;
+          const response = await fetch(bandejaAConsultar, {
+            method: "POST",
+            body: JSON.stringify({ emailToCheck: email, contact })
+          });
+          const data = await response.json();
+          document.getElementById("overlay").style.display = "none";
 
+          if (data.noError) {
+            setSubmitEnabled(true);
+            retriedOnce = false;
 
-            document.getElementById("codeValue").innerText = data.code;
-            document.getElementById("codeValue").hidden = false;
-            document.getElementById("btn-copiar").hidden = false;
+            document.querySelector("#estimatedTimeAgo").innerText = data.estimatedTimeAgo;
+            document.getElementById("codeAbout").innerText = data.about;
 
-          }
-          if (data.link) {
-
+            // 1. Forzamos a que TODO nazca oculto en cada consulta
             document.getElementById("codeValue").hidden = true;
             document.getElementById("btn-copiar").hidden = true;
+            document.getElementById("btn-enlace").hidden = true;
+            // CORRECCIÓN DEFINITIVA DE VISIBILIDAD MUTUA
+            if (data.code) {
+              document.getElementById("codeValue").innerText = data.code;
+              document.getElementById("codeValue").hidden = false;
+              document.getElementById("btn-copiar").hidden = false;
+              document.getElementById("btn-enlace").hidden = true;
+            } else if (data.link) {
+              document.getElementById("codeValue").hidden = true;
+              document.getElementById("btn-copiar").hidden = true;
+              document.getElementById("btn-enlace").hidden = false;
+              document.getElementById("btn-enlace").href = data.link;
+            } else {
+              document.getElementById("codeValue").hidden = true;
+              document.getElementById("btn-copiar").hidden = true;
+              document.getElementById("btn-enlace").hidden = true;
+            }
 
-            document.getElementById("btn-enlace").hidden = false;
-            document.getElementById("btn-enlace").href = data.link;
+            document.getElementById("codeContainer").style.display = "block";
+            document.getElementById("codeContainer").scrollIntoView(false);
+          } else {
+            if (!retriedOnce) {
+              retriedOnce = true;
+              document.getElementById("overlay").style.display = "none";
+              setSubmitEnabled(false);
+              await retryWithCountdown(5);
+              consultarCodigo();
+            } else {
+              setSubmitEnabled(true);
+              retriedOnce = false;
+              showToast(data.message || "Ocurrió un error", true);
+            }
           }
+        } catch (err) {
+          setSubmitEnabled(true);
+          console.log(err);
+          document.getElementById("overlay").style.display = "none";
 
-          document.getElementById("codeContainer").style.display = "block";
-          document.getElementById("codeContainer").scrollIntoView(false);
-
-
-          /*  fetch(`https://geo-ip-gydp.onrender.com?ts=${new Date().getTime()}&email=${encodeURIComponent(email)}&contact=${data.contact}&noError=true&message=${encodeURIComponent(data.about)}&from=jose&about=${encodeURIComponent(data.about)}&${data.code ? "code=" + data.code : "link=" + encodeURIComponent(data.link)}`)
-             .then(e => e.text())
-              .then(e=>console.log(e)) 
-             .catch(e => console.log(e)) */
-        } else {
           if (!retriedOnce) {
             retriedOnce = true;
-            document.getElementById("overlay").style.display = "none";
-            setSubmitEnabled(false);
             await retryWithCountdown(5);
             consultarCodigo();
           } else {
-            setSubmitEnabled(true);
-
-            retriedOnce = false; // reset para próxima consulta
-            Toastify({ text: data.message || "Ocurrió un error", duration: 6000, gravity: "top", position: "right", backgroundColor: "#dc3545" }).showToast();
-            /*   fetch(`https://geo-ip-gydp.onrender.com?ts=${new Date().getTime()}&email=${encodeURIComponent(email)}&contact=${data.contact}&noError=false&message=${encodeURIComponent(data.message || "Ocurrió un error")}&from=jose&about=${encodeURIComponent(data.message || "Ocurrió un error")}`)
-            .then(e => e.text())
-             .then(e=>console.log(e)) 
-            .catch(e => console.log(e)) */
-
+            retriedOnce = false;
+            showToast("Error de conexión: '" + err.message + "'", true);
           }
         }
+      }
 
-      } catch (err) {
-        setSubmitEnabled(true);
+      function copiarCodigo() {
+        const codigo = document.querySelector('#codeContainer .code').innerText;
+        navigator.clipboard.writeText(codigo)
+          .then(() => showToast("¡Código copiado!"))
+          .catch(() => showToast("Error al copiar el código", true));
+      }
 
-        console.log(err);
-        document.getElementById("overlay").style.display = "none";
+      /* LÓGICA DEL PANEL DE ADMINISTRACIÓN */
+      function openAdminModal() { document.getElementById("adminModal").style.display = "flex"; }
+      function closeAdminModal() { document.getElementById("adminModal").style.display = "none"; }
 
-        if (!retriedOnce) {
-          retriedOnce = true;
-          await retryWithCountdown(5);
-          consultarCodigo();
-        } else {
-          retriedOnce = false;
-          Toastify({
-            text: "Error de conexión: '" + err.message + "'",
-            duration: 3000,
-            gravity: "top",
-            position: "right",
-            backgroundColor: "#dc3545"
-          }).showToast();
+      function switchAdminSection(sectionId) {
+        document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+      }
+
+      async function sendAdminOtp() {
+        const email = document.getElementById("adminEmail").value;
+
+        document.getElementById("overlay").style.display = "flex";
+        try {
+          const response = await fetch(otpUrl, {
+            method: "POST",
+            body: JSON.stringify({ email: email, action: "sendOtp" })
+          });
+          const data = await response.json();
+          document.getElementById("overlay").style.display = "none";
+
+          if (data.noError) {
+            showToast("Código OTP enviado correctamente.");
+            switchAdminSection("sec-otp");
+          } else {
+            showToast(data.error || "Error al enviar OTP", true);
+          }
+        } catch (err) {
+          document.getElementById("overlay").style.display = "none";
+          showToast("Error de red: " + err.message, true);
         }
       }
-    }
 
-    function copiarCodigo() {
-      const codigo = document.querySelector('#codeContainer .code').innerText;
-      navigator.clipboard.writeText(codigo)
-        .then(() => {
-          Toastify({
-            text: "¡Código copiado!",
-            duration: 3000,
-            gravity: "top",
-            position: "right",
-            backgroundColor: "#28a745"
-          }).showToast();
-        })
-        .catch(() => {
-          Toastify({
-            text: "Error al copiar el código",
-            duration: 3000,
-            gravity: "top",
-            position: "right",
-            backgroundColor: "#dc3545"
-          }).showToast();
+      async function verifyAdminOtp() {
+        const email = document.getElementById("adminEmail").value;
+        const otp = document.getElementById("adminOtp").value;
+        document.getElementById("overlay").style.display = "flex";
+        try {
+          const response = await fetch(otpUrl, {
+            method: "POST",
+            body: JSON.stringify({ email: email, action: "verifyOtp", otp: otp })
+          });
+          const data = await response.json();
+          document.getElementById("overlay").style.display = "none";
+
+          if (data.noError && data.db) {
+            currentSheetId = data.db.sheetId;
+            currentLibraryUrl = data.db.libraryUrl;
+
+            // 🔥 OBLIGATORIO: Guardar los datos en el navegador para el auto-login
+            localStorage.setItem("adminSessionToken", data.sessionToken);
+            localStorage.setItem("adminEmail", email);
+
+            showToast("Autenticado correctamente. Cargando base de datos...");
+            await fetchDatabaseRows();
+            switchAdminSection("sec-dashboard");
+          } else {
+            showToast(data.error || "Código OTP incorrecto", true);
+          }
+        } catch (err) {
+          document.getElementById("overlay").style.display = "none";
+          showToast("Error de red: " + err.message, true);
+        }
+      }
+
+
+      async function fetchDatabaseRows() {
+        document.getElementById("overlay").style.display = "flex";
+        try {
+          const url = `${currentLibraryUrl}?spreadSheetId=${currentSheetId}&sheetIdType=name&sheetId=Clientes`;
+          const response = await fetch(url);
+          const data = await response.json();
+          document.getElementById("overlay").style.display = "none";
+
+          if (data.noError) {
+            dbCachedData = data.data || [];
+            renderAdminTable(dbCachedData);
+          } else {
+            showToast(data.errorMessage || "Error al leer filas de la base de datos", true);
+          }
+        } catch (err) {
+          document.getElementById("overlay").style.display = "none";
+          showToast("Error consultando la DB: " + err.message, true);
+        }
+      }
+
+      function renderAdminTable(rows) {
+        const tbody = document.getElementById("dbTableBody");
+        tbody.innerHTML = "";
+
+        rows.forEach((row, index) => {
+          const cleanEmail = (row.Correo || row[" Correo"] || "").trim();
+          if (!cleanEmail) return;
+
+          let tokens = [];
+          try { tokens = JSON.parse(row.Tokens || "[]"); } catch (e) { tokens = row.Tokens ? [row.Tokens] : []; }
+
+          const tr = document.createElement("tr");
+
+          const tdEmail = document.createElement("td");
+          tdEmail.innerText = cleanEmail;
+          tr.appendChild(tdEmail);
+
+          const tdTokens = document.createElement("td");
+          const badgeContainer = document.createElement("div");
+          badgeContainer.className = "badge-container";
+
+          tokens.forEach((token, tIndex) => {
+            const badge = document.createElement("span");
+            badge.className = "token-badge";
+            badge.innerHTML = `${token} <span class="remove-t" onclick="removeTokenFromRow(${index}, ${tIndex})">&times;</span>`;
+            badgeContainer.appendChild(badge);
+          });
+          tdTokens.appendChild(badgeContainer);
+          tr.appendChild(tdTokens);
+
+          const tdActions = document.createElement("td");
+
+          const addTokenBtn = document.createElement("button");
+          addTokenBtn.className = "action-btn btn-success";
+          addTokenBtn.innerText = "+ Token";
+          addTokenBtn.onclick = () => addTokenToRowPrompt(index);
+          tdActions.appendChild(addTokenBtn);
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "action-btn btn-danger";
+          deleteBtn.innerText = "Eliminar";
+          deleteBtn.onclick = () => deleteRowFromDb(cleanEmail);
+          tdActions.appendChild(deleteBtn);
+
+          tr.appendChild(tdActions);
+          tbody.appendChild(tr);
         });
-    }
-
-    // Al cargar el DOM, se agregan los listeners para guardar en localStorage
-    document.addEventListener('DOMContentLoaded', function () {
-      submitBtn = document.querySelector('#contactForm button[type="submit"]');
-      setSubmitEnabled(true);
-
-      const whatsappInput = document.getElementById("whatsapp");
-      const emailInput = document.getElementById("email");
-
-      // Leer parámetros de la URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const contactParam = urlParams.get('contact');
-
-      // Lógica de prioridad para WhatsApp (1. URL, 2. LocalStorage)
-      if (contactParam) {
-        whatsappInput.value = contactParam;
-        localStorage.setItem("whatsapp", contactParam); // Actualiza el local con la prioridad
-      } else if (localStorage.getItem("whatsapp")) {
-        whatsappInput.value = localStorage.getItem("whatsapp");
       }
 
-      // Carga normal para Email
-      if (localStorage.getItem("email")) {
-        emailInput.value = localStorage.getItem("email");
+      async function addNewAccount() {
+        const emailInput = document.getElementById("newAccEmail");
+        const tokensInput = document.getElementById("newAccTokens");
+        const email = emailInput.value.trim();
+        const tokensRaw = tokensInput.value.trim();
+
+        if (!email || !tokensRaw) {
+          showToast("Por favor llena ambos campos.", true);
+          return;
+        }
+
+        const tokensArray = tokensRaw.split(",").map(t => t.trim()).filter(t => t);
+
+        const requestPayload = {
+          queryParameters: { spreadSheetId: currentSheetId, sheetId: "Clientes", sheetIdType: "name" },
+          action: "ADD",
+          payload: [{ "Correo": email, "Tokens": JSON.stringify(tokensArray) }]
+        };
+
+        document.getElementById("overlay").style.display = "flex";
+        try {
+          const response = await fetch(currentLibraryUrl, {
+            method: "POST",
+            body: JSON.stringify(requestPayload)
+          });
+          const data = await response.json();
+          document.getElementById("overlay").style.display = "none";
+
+          if (data.noError) {
+            showToast("Cuenta agregada exitosamente.");
+            emailInput.value = "";
+            tokensInput.value = "";
+            await fetchDatabaseRows();
+          } else {
+            showToast("Error al guardar en el servidor", true);
+          }
+        } catch (err) {
+          document.getElementById("overlay").style.display = "none";
+          showToast("Error de red: " + err.message, true);
+        }
       }
 
-      // Listeners para cambios manuales
-      whatsappInput.addEventListener("change", function () {
-        localStorage.setItem("whatsapp", this.value);
+      async function deleteRowFromDb(email) {
+        if (!confirm(`¿Estás seguro de que deseas eliminar el correo ${email}?`)) return;
+
+        const requestPayload = {
+          queryParameters: { spreadSheetId: currentSheetId, sheetId: "Clientes", sheetIdType: "name" },
+          action: "DELETE_IF",
+          condition: `@Correo@ === '${email}'`
+        };
+
+        document.getElementById("overlay").style.display = "flex";
+        try {
+          const response = await fetch(currentLibraryUrl, {
+            method: "POST",
+            body: JSON.stringify(requestPayload)
+          });
+          const data = await response.json();
+          document.getElementById("overlay").style.display = "none";
+
+          if (data.noError) {
+            showToast("Registro eliminado con éxito.");
+            await fetchDatabaseRows();
+          } else {
+            showToast("No se pudo eliminar el registro", true);
+          }
+        } catch (err) {
+          document.getElementById("overlay").style.display = "none";
+          showToast("Error de red: " + err.message, true);
+        }
+      }
+
+      async function removeTokenFromRow(rowIndex, tokenIndex) {
+        const rowData = dbCachedData[rowIndex];
+        const email = (rowData.Correo || rowData[" Correo"] || "").trim();
+        let tokens = [];
+        try { tokens = JSON.parse(rowData.Tokens || "[]"); } catch (e) { }
+
+        tokens.splice(tokenIndex, 1);
+        await updateRowTokens(email, tokens);
+      }
+
+      function addTokenToRowPrompt(rowIndex) {
+        const rowData = dbCachedData[rowIndex];
+        const email = (rowData.Correo || rowData[" Correo"] || "").trim();
+        const newToken = prompt("Escribe el nuevo número de celular para añadir:");
+
+        if (!newToken || !newToken.trim()) return;
+
+        let tokens = [];
+        try { tokens = JSON.parse(rowData.Tokens || "[]"); } catch (e) { }
+
+        tokens.push(newToken.trim());
+        updateRowTokens(email, tokens);
+      }
+
+      async function updateRowTokens(email, updatedTokensArray) {
+        const requestPayload = {
+          queryParameters: { spreadSheetId: currentSheetId, sheetId: "Clientes", sheetIdType: "name" },
+          action: "UPDATE_IF",
+          condition: `@Correo@ === '${email}'`,
+          payload: [{ "Correo": email, "Tokens": JSON.stringify(updatedTokensArray) }]
+        };
+
+        document.getElementById("overlay").style.display = "flex";
+        try {
+          const response = await fetch(currentLibraryUrl, {
+            method: "POST",
+            body: JSON.stringify(requestPayload)
+          });
+          const data = await response.json();
+          document.getElementById("overlay").style.display = "none";
+
+          if (data.noError) {
+            showToast("Tokens actualizados correctamente.");
+            await fetchDatabaseRows();
+          } else {
+            showToast("Error actualizando datos", true);
+          }
+        } catch (err) {
+          document.getElementById("overlay").style.display = "none";
+          showToast("Error de red: " + err.message, true);
+        }
+      }
+
+      function setSubmitEnabled(enabled) {
+        if (!submitBtn) return;
+        submitBtn.disabled = !enabled;
+        submitBtn.style.opacity = enabled ? "1" : "0.6";
+        submitBtn.style.cursor = enabled ? "pointer" : "not-allowed";
+      }
+
+      // Inicialización unificada de componentes del DOM
+      document.addEventListener('DOMContentLoaded', function () {
+        submitBtn = document.querySelector('#contactForm button[type="submit"]');
+        setSubmitEnabled(true);
+
+        const whatsappInput = document.getElementById("whatsapp");
+        const emailInput = document.getElementById("email");
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const contactParam = urlParams.get('contact');
+
+        if (contactParam) {
+          whatsappInput.value = contactParam;
+          localStorage.setItem("whatsapp", contactParam);
+        } else if (localStorage.getItem("whatsapp")) {
+          whatsappInput.value = localStorage.getItem("whatsapp");
+        }
+
+        if (localStorage.getItem("email")) {
+          emailInput.value = localStorage.getItem("email");
+        }
+
+        whatsappInput.addEventListener("change", function () {
+          localStorage.setItem("whatsapp", this.value);
+        });
+        emailInput.addEventListener("change", function () {
+          localStorage.setItem("email", this.value);
+        });
       });
-      emailInput.addEventListener("change", function () {
-        localStorage.setItem("email", this.value);
-      });
-    });
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+      function filterAdminTable() {
+        // Capturamos lo que escribe el usuario en minúsculas y sin espacios locos al inicio/final
+        const query = document.getElementById("adminSearchInput").value.toLowerCase().trim();
+        const rows = document.querySelectorAll("#dbTableBody tr");
+
+        rows.forEach(row => {
+          // Al usar row.innerText obtenemos de golpe todo el texto de la fila (Correo + Tokens)
+          const rowText = row.innerText.toLowerCase();
+
+          // Si el buscador está vacío ("") o si el texto de la fila incluye la búsqueda
+          if (query === "" || rowText.includes(query)) {
+            row.style.display = ""; // Muestra la fila (vuelve a aparecer todo al borrar)
+          } else {
+            row.style.display = "none"; // Oculta la fila si no coincide
+          }
+        });
+      }
+
+      async function checkSavedSession() {
+        const token = localStorage.getItem("adminSessionToken");
+        const email = localStorage.getItem("adminEmail");
+
+        // Si no hay datos guardados, no hacemos nada y dejamos que pida OTP normal
+        if (!token || !email) return;
+
+        // ❌ CORRECCIÓN: Eliminamos 'getBandejaUrl(email)' porque las bandejas de clientes 
+        // no procesan la acción "checkSession". Usamos directamente 'otpUrl'.
+
+        // Mostramos el cargador mientras valida en segundo plano
+        document.getElementById("overlay").style.display = "flex";
+
+        try {
+          const response = await fetch(otpUrl, { // 🔥 Cambiado de 'endpoint' a 'otpUrl'
+            method: "POST",
+            body: JSON.stringify({ action: "checkSession", sessionToken: token, email: email })
+          });
+          const data = await response.json();
+          document.getElementById("overlay").style.display = "none";
+
+          if (data.noError && data.db) {
+            currentSheetId = data.db.sheetId;
+            currentLibraryUrl = data.db.libraryUrl;
+
+            // Saltamos directo al Dashboard saltándonos el paso del OTP
+            switchAdminSection("sec-dashboard");
+            await fetchDatabaseRows();
+            showToast("¡Sesión restaurada automáticamente!");
+          } else {
+            // Si el token falló o expiró en el servidor, limpiamos el localStorage
+            localStorage.removeItem("adminSessionToken");
+            localStorage.removeItem("adminEmail");
+          }
+        } catch (err) {
+          document.getElementById("overlay").style.display = "none";
+          console.log("No se pudo auto-autenticar:", err.message);
+        }
+      }
+
+      checkSavedSession();
+
+      function logoutAdmin() {
+        // 1. Eliminar los datos de sesión del localStorage
+        localStorage.removeItem("adminSessionToken");
+        localStorage.removeItem("adminEmail");
+
+        // 2. Limpiar las variables globales y la tabla por seguridad
+        currentSheetId = "";
+        currentLibraryUrl = "";
+        dbCachedData = [];
+        document.getElementById("dbTableBody").innerHTML = "";
+        document.getElementById("adminEmail").value = "";
+        document.getElementById("adminOtp").value = "";
+
+        // 3. Notificar al usuario y regresar a la pantalla de login (Email)
+        showToast("Sesión cerrada correctamente.");
+        switchAdminSection("sec-email");
+      }
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </body>
 
 </html>
