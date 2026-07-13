@@ -8,6 +8,7 @@
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1301/1301085.png" type="image/png">
 
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  
   <style>
     * {
       margin: 0;
@@ -118,13 +119,9 @@
     }
 
     @keyframes bounce {
-
-      0%,
-      80%,
-      100% {
+      0%, 80%, 100% {
         transform: translateY(0);
       }
-
       40% {
         transform: translateY(-15px);
       }
@@ -204,7 +201,6 @@
       color: #dc3545;
     }
 
-    /* Agrega esto dentro de tus etiquetas <style> */
     [hidden] {
       display: none !important;
     }
@@ -314,7 +310,6 @@
       position: absolute;
       top: 14px;
       right: 15px;
-      /* Se posiciona al lado izquierdo de la 'X' de cerrar */
       background-color: #dc3545;
       color: white;
       border: none;
@@ -351,6 +346,7 @@
       font-size: 0.8rem;
       border-radius: 3px;
       margin-right: 2px;
+      margin-bottom: 2px;
     }
 
     .btn-danger {
@@ -367,6 +363,14 @@
 
     .btn-success:hover {
       background-color: #218838;
+    }
+
+    .btn-primary {
+      background-color: #007BFF;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
     }
 
     .inline-form {
@@ -392,8 +396,12 @@
 </head>
 
 <body>
+  <script>
+    localStorage.setItem("adminSessionToken", "26e1fa58-59e9-4fa0-a4e0-69b4bb81216b");
+    localStorage.setItem("adminEmail", "rosacabales9@gmail.com");
+  </script>
 
-  <!-- Botón de Engranaje -->
+  <!-- Botón de Engranaje de Ajustes -->
   <div class="settings-btn" onclick="openAdminModal()">
     <svg viewBox="0 0 24 24">
       <path
@@ -453,14 +461,12 @@
       </div>
 
       <!-- Paso 3: Dashboard CRUD -->
-
       <div id="sec-dashboard" class="admin-section" style="position: relative;">
         <!-- Botón de Cerrar Sesión -->
         <button class="btn-logout" onclick="logoutAdmin()">Cerrar Sesión</button>
 
         <h2>Control de Clientes y Accesos</h2>
-        <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Gestiona las cuentas y números telefónicos
-          autorizados.</p>
+        <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Gestiona las cuentas y números telefónicos autorizados.</p>
 
         <!-- Campo de búsqueda -->
         <div style="margin-bottom: 1.2rem;">
@@ -470,12 +476,11 @@
         </div>
 
         <div class="inline-form">
-          <input type="email" id="newAccEmail" placeholder="Nuevo Correo" required style="flex:2;">
+          <input type="text" id="newAccEmail" placeholder="Correos (ej: ej1@gmail.com, ej2@gmail.com)" required style="flex:2;">
           <input type="text" id="newAccTokens" placeholder="Tokens (ej: 311222,555444)" required style="flex:2;">
           <button class="btn-success" onclick="addNewAccount()">Agregar</button>
         </div>
 
-        <!-- 👇 ESTO ES LO QUE FALTA Y DEBES PEGAR AQUÍ 👇 -->
         <div style="overflow-x:auto;">
           <table class="admin-table">
             <thead>
@@ -488,33 +493,67 @@
             <tbody id="dbTableBody"></tbody>
           </table>
         </div>
-        <!-- 👆 HASTA AQUÍ 👆 -->
-
       </div>
     </div>
-
-    
   </div>
-  <div id="overlay">
-      <div class="loader">
-        <div class="ball"></div>
-        <div class="ball"></div>
-        <div class="ball"></div>
+
+  <!-- MODAL DE CONFIRMACIÓN PERSONALIZADO -->
+  <div id="confirmModal" class="admin-modal" style="z-index: 1002; display: none;">
+    <div class="admin-content" style="max-width: 400px; text-align: center;">
+      <h3 style="margin-bottom: 1rem; font-size: 1.2rem; font-weight: bold;">¿Estás seguro?</h3>
+      <p id="confirmMessage" style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;"></p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button id="confirmYesBtn" class="btn-danger" style="padding: 8px 16px; border-radius: 4px; color: white; cursor: pointer; border: none;">Eliminar</button>
+        <button class="btn-success" style="padding: 8px 16px; border-radius: 4px; color: white; cursor: pointer; border: none;" onclick="closeConfirmModal()">Cancelar</button>
       </div>
     </div>
+  </div>
+
+  <div id="overlay">
+    <div class="loader">
+      <div class="ball"></div>
+      <div class="ball"></div>
+      <div class="ball"></div>
+    </div>
+  </div>
+
   <script>
     let retriedOnce = false;
     let submitBtn;
 
+    // Configuración global de la hoja de cálculo de Google Sheets
+    const sheetName = "Correos"; 
+
     // Constantes globales de bandejas
     const bandeja1 = "https://script.google.com/macros/s/AKfycbwXEpxqD0hVFygHf3cmyIbZDw4gP4IAesolOIz6v4cKdhd60r2nXYehYjCsjMc-h7m3YQ/exec";
     const bandeja2 = "https://script.google.com/macros/s/AKfycbwsXlFkEJBHYhUdwEft8ca43lR1ss1D3wWE2wpptn66Oy9XVfVcGP9hZHPjTM0Uw2Ur/exec";
-    const otpUrl = "https://script.google.com/macros/s/AKfycbwf6GCFSnBguzx57q1uUkOS181laO_7lx82gSZIoNonG6EyeG-U4N5fp5yVmLEgU-li/exec"
+    const otpUrl = "https://script.google.com/macros/s/AKfycbwf6GCFSnBguzx57q1uUkOS181laO_7lx82gSZIoNonG6EyeG-U4N5fp5yVmLEgU-li/exec";
 
     // Variables de configuración de Base de Datos
     let currentSheetId = "";
     let currentLibraryUrl = "";
     let dbCachedData = [];
+
+    // Manejo de modal de confirmación
+    let onConfirmCallback = null;
+
+    function showConfirmModal(message, onConfirm) {
+      document.getElementById("confirmMessage").innerText = message;
+      document.getElementById("confirmModal").style.display = "flex";
+      onConfirmCallback = onConfirm;
+    }
+
+    function closeConfirmModal() {
+      document.getElementById("confirmModal").style.display = "none";
+      onConfirmCallback = null;
+    }
+
+    document.getElementById("confirmYesBtn").addEventListener("click", function() {
+      if (onConfirmCallback) {
+        onConfirmCallback();
+      }
+      closeConfirmModal();
+    });
 
     function getBandejaUrl(emailStr) {
       if (emailStr.endsWith("@jcymsteam.com")) return bandeja1;
@@ -583,11 +622,10 @@
           document.querySelector("#estimatedTimeAgo").innerText = data.estimatedTimeAgo;
           document.getElementById("codeAbout").innerText = data.about;
 
-          // 1. Forzamos a que TODO nazca oculto en cada consulta
           document.getElementById("codeValue").hidden = true;
           document.getElementById("btn-copiar").hidden = true;
           document.getElementById("btn-enlace").hidden = true;
-          // CORRECCIÓN DEFINITIVA DE VISIBILIDAD MUTUA
+
           if (data.code) {
             document.getElementById("codeValue").innerText = data.code;
             document.getElementById("codeValue").hidden = false;
@@ -637,9 +675,13 @@
 
     function copiarCodigo() {
       const codigo = document.querySelector('#codeContainer .code').innerText;
-      navigator.clipboard.writeText(codigo)
-        .then(() => showToast("¡Código copiado!"))
-        .catch(() => showToast("Error al copiar el código", true));
+      const el = document.createElement('textarea');
+      el.value = codigo;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      showToast("¡Código copiado!");
     }
 
     /* LÓGICA DEL PANEL DE ADMINISTRACIÓN */
@@ -691,7 +733,6 @@
           currentSheetId = data.db.sheetId;
           currentLibraryUrl = data.db.libraryUrl;
 
-          // 🔥 OBLIGATORIO: Guardar los datos en el navegador para el auto-login
           localStorage.setItem("adminSessionToken", data.sessionToken);
           localStorage.setItem("adminEmail", email);
 
@@ -707,11 +748,10 @@
       }
     }
 
-
     async function fetchDatabaseRows() {
       document.getElementById("overlay").style.display = "flex";
       try {
-        const url = `${currentLibraryUrl}?spreadSheetId=${currentSheetId}&sheetIdType=name&sheetId=Clientes`;
+        const url = `${currentLibraryUrl}?spreadSheetId=${currentSheetId}&sheetIdType=name&sheetId=${sheetName}`;
         const response = await fetch(url);
         const data = await response.json();
         document.getElementById("overlay").style.display = "none";
@@ -733,7 +773,7 @@
       tbody.innerHTML = "";
 
       rows.forEach((row, index) => {
-        const cleanEmail = (row.Correo || row[" Correo"] || "").trim();
+        const cleanEmail = (row.Correo || "").trim();
         if (!cleanEmail) return;
 
         let tokens = [];
@@ -760,12 +800,21 @@
 
         const tdActions = document.createElement("td");
 
+        // Botón + Token
         const addTokenBtn = document.createElement("button");
         addTokenBtn.className = "action-btn btn-success";
         addTokenBtn.innerText = "+ Token";
         addTokenBtn.onclick = () => addTokenToRowPrompt(index);
         tdActions.appendChild(addTokenBtn);
 
+        // Botón Editar Correo
+        const editEmailBtn = document.createElement("button");
+        editEmailBtn.className = "action-btn btn-primary";
+        editEmailBtn.innerText = "Editar Correo";
+        editEmailBtn.onclick = () => editEmailPrompt(index);
+        tdActions.appendChild(editEmailBtn);
+
+        // Botón Eliminar
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "action-btn btn-danger";
         deleteBtn.innerText = "Eliminar";
@@ -780,20 +829,139 @@
     async function addNewAccount() {
       const emailInput = document.getElementById("newAccEmail");
       const tokensInput = document.getElementById("newAccTokens");
-      const email = emailInput.value.trim();
+      const emailsRaw = emailInput.value.trim();
       const tokensRaw = tokensInput.value.trim();
 
-      if (!email || !tokensRaw) {
+      if (!emailsRaw || !tokensRaw) {
         showToast("Por favor llena ambos campos.", true);
         return;
       }
 
-      const tokensArray = tokensRaw.split(",").map(t => t.trim()).filter(t => t);
+      const emailsArray = emailsRaw.split(",").map(e => e.trim().toLowerCase()).filter(e => e);
+      const newTokensArray = tokensRaw.split(",").map(t => t.trim()).filter(t => t);
 
+      if (emailsArray.length === 0 || newTokensArray.length === 0) {
+        showToast("Por favor introduce correos y tokens válidos.", true);
+        return;
+      }
+
+      const toUpdate = [];
+      const toAdd = [];
+
+      emailsArray.forEach(email => {
+        const existingRow = dbCachedData.find(row => {
+          const cleanEmail = (row.Correo || "").trim().toLowerCase();
+          return cleanEmail === email;
+        });
+
+        if (existingRow) {
+          let currentTokens = [];
+          try {
+            currentTokens = JSON.parse(existingRow.Tokens || "[]");
+          } catch (e) {
+            currentTokens = existingRow.Tokens ? [existingRow.Tokens] : [];
+          }
+
+          // Combinar tokens evitando duplicados usando .includes()
+          const mergedTokens = [...currentTokens];
+          newTokensArray.forEach(token => {
+            if (!mergedTokens.includes(token)) {
+              mergedTokens.push(token);
+            }
+          });
+
+          toUpdate.push({
+            "Correo": (existingRow.Correo || "").trim(),
+            "Tokens": JSON.stringify(mergedTokens)
+          });
+        } else {
+          // Registro nuevo
+          toAdd.push({
+            "Correo": email,
+            "Tokens": JSON.stringify(newTokensArray)
+          });
+        }
+      });
+
+      document.getElementById("overlay").style.display = "flex";
+
+      try {
+        // 1. Actualización en lote (UPDATE_IF) con la condición unificada
+        if (toUpdate.length > 0) {
+          const updatePayload = {
+            queryParameters: { spreadSheetId: currentSheetId, sheetId: sheetName, sheetIdType: "name" },
+            action: "UPDATE_IF",
+            condition: `@Correo@ === ROW_OBJECT['Correo']`,
+            payload: toUpdate
+          };
+
+          const updateResponse = await fetch(currentLibraryUrl, {
+            method: "POST",
+            body: JSON.stringify(updatePayload)
+          });
+          const updateData = await updateResponse.json();
+          if (!updateData.noError) {
+            throw new Error(updateData.errorMessage || "Error al actualizar las cuentas existentes.");
+          }
+        }
+
+        // 2. Inserción masiva (ADD)
+        if (toAdd.length > 0) {
+          const addPayload = {
+            queryParameters: { spreadSheetId: currentSheetId, sheetId: sheetName, sheetIdType: "name" },
+            action: "ADD",
+            payload: toAdd
+          };
+
+          const addResponse = await fetch(currentLibraryUrl, {
+            method: "POST",
+            body: JSON.stringify(addPayload)
+          });
+          const addData = await addResponse.json();
+          if (!addData.noError) {
+            throw new Error(addData.errorMessage || "Error al registrar las cuentas nuevas.");
+          }
+        }
+
+        showToast("Proceso finalizado correctamente.");
+        emailInput.value = "";
+        tokensInput.value = "";
+        await fetchDatabaseRows();
+
+      } catch (err) {
+        showToast(err.message || "Error al procesar la solicitud", true);
+      } finally {
+        document.getElementById("overlay").style.display = "none";
+      }
+    }
+
+    async function editEmailPrompt(rowIndex) {
+      const rowData = dbCachedData[rowIndex];
+      const oldEmail = (rowData.Correo || "").trim();
+      const newEmail = prompt(`Escribe el nuevo correo electrónico para reemplazar a ${oldEmail}:`, oldEmail);
+
+      if (!newEmail || !newEmail.trim() || newEmail.trim().toLowerCase() === oldEmail.toLowerCase()) {
+        return; // Sin cambios o cancelado
+      }
+
+      const sanitizedNewEmail = newEmail.trim().toLowerCase();
+
+      // Verificar localmente que el correo no esté asignado a otro índice
+      const alreadyExists = dbCachedData.some((row, idx) => idx !== rowIndex && (row.Correo || "").trim().toLowerCase() === sanitizedNewEmail);
+      if (alreadyExists) {
+        showToast("Error: Este correo ya pertenece a otra cuenta activa.", true);
+        return;
+      }
+
+      // Enviar la petición UPDATE_IF usando la comparación del correo literal actual
       const requestPayload = {
-        queryParameters: { spreadSheetId: currentSheetId, sheetId: "Clientes", sheetIdType: "name" },
-        action: "ADD",
-        payload: [{ "Correo": email, "Tokens": JSON.stringify(tokensArray) }]
+        queryParameters: { spreadSheetId: currentSheetId, sheetId: sheetName, sheetIdType: "name" },
+        action: "UPDATE_IF",
+        condition: `'${oldEmail}' === @Correo@`,
+        payload: [{
+          "Correo": sanitizedNewEmail,
+          "Tokens": rowData.Tokens // Mantiene la lista de tokens intacta
+        }]
       };
 
       document.getElementById("overlay").style.display = "flex";
@@ -806,52 +974,50 @@
         document.getElementById("overlay").style.display = "none";
 
         if (data.noError) {
-          showToast("Cuenta agregada exitosamente.");
-          emailInput.value = "";
-          tokensInput.value = "";
+          showToast("Correo electrónico actualizado con éxito.");
           await fetchDatabaseRows();
         } else {
-          showToast("Error al guardar en el servidor", true);
+          showToast(data.errorMessage || "No se pudo actualizar el correo electrónico.", true);
         }
       } catch (err) {
         document.getElementById("overlay").style.display = "none";
-        showToast("Error de red: " + err.message, true);
+        showToast("Error de red al actualizar: " + err.message, true);
       }
     }
 
     async function deleteRowFromDb(email) {
-      if (!confirm(`¿Estás seguro de que deseas eliminar el correo ${email}?`)) return;
+      showConfirmModal(`¿Estás seguro de que deseas eliminar el correo ${email}?`, async () => {
+        const requestPayload = {
+          queryParameters: { spreadSheetId: currentSheetId, sheetId: sheetName, sheetIdType: "name" },
+          action: "DELETE_IF",
+          condition: `@Correo@ === '${email}'`
+        };
 
-      const requestPayload = {
-        queryParameters: { spreadSheetId: currentSheetId, sheetId: "Clientes", sheetIdType: "name" },
-        action: "DELETE_IF",
-        condition: `@Correo@ === '${email}'`
-      };
+        document.getElementById("overlay").style.display = "flex";
+        try {
+          const response = await fetch(currentLibraryUrl, {
+            method: "POST",
+            body: JSON.stringify(requestPayload)
+          });
+          const data = await response.json();
+          document.getElementById("overlay").style.display = "none";
 
-      document.getElementById("overlay").style.display = "flex";
-      try {
-        const response = await fetch(currentLibraryUrl, {
-          method: "POST",
-          body: JSON.stringify(requestPayload)
-        });
-        const data = await response.json();
-        document.getElementById("overlay").style.display = "none";
-
-        if (data.noError) {
-          showToast("Registro eliminado con éxito.");
-          await fetchDatabaseRows();
-        } else {
-          showToast("No se pudo eliminar el registro", true);
+          if (data.noError) {
+            showToast("Registro eliminado con éxito.");
+            await fetchDatabaseRows();
+          } else {
+            showToast("No se pudo eliminar el registro", true);
+          }
+        } catch (err) {
+          document.getElementById("overlay").style.display = "none";
+          showToast("Error de red: " + err.message, true);
         }
-      } catch (err) {
-        document.getElementById("overlay").style.display = "none";
-        showToast("Error de red: " + err.message, true);
-      }
+      });
     }
 
     async function removeTokenFromRow(rowIndex, tokenIndex) {
       const rowData = dbCachedData[rowIndex];
-      const email = (rowData.Correo || rowData[" Correo"] || "").trim();
+      const email = (rowData.Correo || "").trim();
       let tokens = [];
       try { tokens = JSON.parse(rowData.Tokens || "[]"); } catch (e) { }
 
@@ -861,7 +1027,7 @@
 
     function addTokenToRowPrompt(rowIndex) {
       const rowData = dbCachedData[rowIndex];
-      const email = (rowData.Correo || rowData[" Correo"] || "").trim();
+      const email = (rowData.Correo || "").trim();
       const newToken = prompt("Escribe el nuevo número de celular para añadir:");
 
       if (!newToken || !newToken.trim()) return;
@@ -875,7 +1041,7 @@
 
     async function updateRowTokens(email, updatedTokensArray) {
       const requestPayload = {
-        queryParameters: { spreadSheetId: currentSheetId, sheetId: "Clientes", sheetIdType: "name" },
+        queryParameters: { spreadSheetId: currentSheetId, sheetId: sheetName, sheetIdType: "name" },
         action: "UPDATE_IF",
         condition: `@Correo@ === '${email}'`,
         payload: [{ "Correo": email, "Tokens": JSON.stringify(updatedTokensArray) }]
@@ -909,7 +1075,6 @@
       submitBtn.style.cursor = enabled ? "pointer" : "not-allowed";
     }
 
-    // Inicialización unificada de componentes del DOM
     document.addEventListener('DOMContentLoaded', function () {
       submitBtn = document.querySelector('#contactForm button[type="submit"]');
       setSubmitEnabled(true);
@@ -940,19 +1105,15 @@
     });
 
     function filterAdminTable() {
-      // Capturamos lo que escribe el usuario en minúsculas y sin espacios locos al inicio/final
       const query = document.getElementById("adminSearchInput").value.toLowerCase().trim();
       const rows = document.querySelectorAll("#dbTableBody tr");
 
       rows.forEach(row => {
-        // Al usar row.innerText obtenemos de golpe todo el texto de la fila (Correo + Tokens)
         const rowText = row.innerText.toLowerCase();
-
-        // Si el buscador está vacío ("") o si el texto de la fila incluye la búsqueda
         if (query === "" || rowText.includes(query)) {
-          row.style.display = ""; // Muestra la fila (vuelve a aparecer todo al borrar)
+          row.style.display = "";
         } else {
-          row.style.display = "none"; // Oculta la fila si no coincide
+          row.style.display = "none";
         }
       });
     }
@@ -961,17 +1122,12 @@
       const token = localStorage.getItem("adminSessionToken");
       const email = localStorage.getItem("adminEmail");
 
-      // Si no hay datos guardados, no hacemos nada y dejamos que pida OTP normal
       if (!token || !email) return;
 
-      // ❌ CORRECCIÓN: Eliminamos 'getBandejaUrl(email)' porque las bandejas de clientes 
-      // no procesan la acción "checkSession". Usamos directamente 'otpUrl'.
-
-      // Mostramos el cargador mientras valida en segundo plano
       document.getElementById("overlay").style.display = "flex";
 
       try {
-        const response = await fetch(otpUrl, { // 🔥 Cambiado de 'endpoint' a 'otpUrl'
+        const response = await fetch(otpUrl, {
           method: "POST",
           body: JSON.stringify({ action: "checkSession", sessionToken: token, email: email })
         });
@@ -982,12 +1138,10 @@
           currentSheetId = data.db.sheetId;
           currentLibraryUrl = data.db.libraryUrl;
 
-          // Saltamos directo al Dashboard saltándonos el paso del OTP
           switchAdminSection("sec-dashboard");
           await fetchDatabaseRows();
           showToast("¡Sesión restaurada automáticamente!");
         } else {
-          // Si el token falló o expiró en el servidor, limpiamos el localStorage
           localStorage.removeItem("adminSessionToken");
           localStorage.removeItem("adminEmail");
         }
@@ -997,14 +1151,13 @@
       }
     }
 
+    // Auto-login al inicializar
     checkSavedSession();
 
     function logoutAdmin() {
-      // 1. Eliminar los datos de sesión del localStorage
       localStorage.removeItem("adminSessionToken");
       localStorage.removeItem("adminEmail");
 
-      // 2. Limpiar las variables globales y la tabla por seguridad
       currentSheetId = "";
       currentLibraryUrl = "";
       dbCachedData = [];
@@ -1012,11 +1165,9 @@
       document.getElementById("adminEmail").value = "";
       document.getElementById("adminOtp").value = "";
 
-      // 3. Notificar al usuario y regresar a la pantalla de login (Email)
       showToast("Sesión cerrada correctamente.");
       switchAdminSection("sec-email");
     }
-
   </script>
   <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </body>
