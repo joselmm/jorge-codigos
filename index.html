@@ -522,7 +522,7 @@
     let submitBtn;
 
     // Configuración global de la hoja de cálculo de Google Sheets
-    const sheetName = "Correos"; 
+    const sheetName = "Pruebas"; 
 
     // Constantes globales de bandejas
     const bandeja1 = "https://script.google.com/macros/s/AKfycbwXEpxqD0hVFygHf3cmyIbZDw4gP4IAesolOIz6v4cKdhd60r2nXYehYjCsjMc-h7m3YQ/exec";
@@ -1032,10 +1032,18 @@
 
       if (!newToken || !newToken.trim()) return;
 
+      const sanitizedToken = newToken.trim();
+
       let tokens = [];
       try { tokens = JSON.parse(rowData.Tokens || "[]"); } catch (e) { }
 
-      tokens.push(newToken.trim());
+      // Comprobar si el token ya existe en el array actual
+      if (tokens.includes(sanitizedToken)) {
+        showToast("Este token o celular ya se encuentra registrado para esta cuenta.", true);
+        return;
+      }
+
+      tokens.push(sanitizedToken);
       updateRowTokens(email, tokens);
     }
 
