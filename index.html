@@ -396,8 +396,6 @@
 </head>
 
 <body>
- 
-
   <!-- Botón de Engranaje de Ajustes -->
   <div class="settings-btn" onclick="openAdminModal()">
     <svg viewBox="0 0 24 24">
@@ -430,6 +428,7 @@
     <div class="code" hidden id="codeValue"></div>
     <button id="btn-copiar" hidden onclick="copiarCodigo()">Copiar Codigo</button>
     <a target="_blank" hidden id="btn-enlace">Abrir enlace</a>
+    <button id="btn-copiar-link" hidden onclick="copiarLink()" style="margin-left:8px;background-color:#17a2b8;">Copiar Link</button>
   </div>
 
   <!-- MODAL DE ADMINISTRACIÓN -->
@@ -622,21 +621,25 @@
           document.getElementById("codeValue").hidden = true;
           document.getElementById("btn-copiar").hidden = true;
           document.getElementById("btn-enlace").hidden = true;
+          document.getElementById("btn-copiar-link").hidden = true;
 
           if (data.code) {
             document.getElementById("codeValue").innerText = data.code;
             document.getElementById("codeValue").hidden = false;
             document.getElementById("btn-copiar").hidden = false;
             document.getElementById("btn-enlace").hidden = true;
+            document.getElementById("btn-copiar-link").hidden = true;
           } else if (data.link) {
             document.getElementById("codeValue").hidden = true;
             document.getElementById("btn-copiar").hidden = true;
             document.getElementById("btn-enlace").hidden = false;
             document.getElementById("btn-enlace").href = data.link;
+            document.getElementById("btn-copiar-link").hidden = false;
           } else {
             document.getElementById("codeValue").hidden = true;
             document.getElementById("btn-copiar").hidden = true;
             document.getElementById("btn-enlace").hidden = true;
+            document.getElementById("btn-copiar-link").hidden = true;
           }
 
           document.getElementById("codeContainer").style.display = "block";
@@ -679,6 +682,21 @@
       document.execCommand('copy');
       document.body.removeChild(el);
       showToast("¡Código copiado!");
+    }
+
+    function copiarLink() {
+      const link = document.getElementById('btn-enlace').href;
+      navigator.clipboard.writeText(link).then(() => {
+        showToast("¡Link copiado!");
+      }).catch(() => {
+        const el = document.createElement('textarea');
+        el.value = link;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        showToast("¡Link copiado!");
+      });
     }
 
     /* LÓGICA DEL PANEL DE ADMINISTRACIÓN */
